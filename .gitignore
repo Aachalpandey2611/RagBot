@@ -21,6 +21,7 @@ frontend/dist/
 backend/uploads/
 rag_service/data_uploads/
 rag_service/faiss_index/
+rag_service/faiss_index_local/
 
 # OS/editor
 .DS_Store
