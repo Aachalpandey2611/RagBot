@@ -19,6 +19,7 @@ export default function ChatInterface({ auth, setAuth }) {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [fileMsg, setFileMsg] = useState("");
+  const [fileMsgType, setFileMsgType] = useState("success");
   const [dragActive, setDragActive] = useState(false);
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -100,6 +101,7 @@ export default function ChatInterface({ auth, setAuth }) {
 
     setUploading(true);
     setFileMsg("");
+    setFileMsgType("success");
     const formData = new FormData();
     formData.append("file", file);
 
@@ -108,9 +110,12 @@ export default function ChatInterface({ auth, setAuth }) {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setFileMsg(`Success: ${data.message}`);
+      setFileMsgType("success");
     } catch (err) {
       console.error(err);
-      setFileMsg("Error uploading file");
+      const detail = err.response?.data?.message || err.response?.data?.detail;
+      setFileMsg(detail || "Error uploading file");
+      setFileMsgType("error");
     } finally {
       setUploading(false);
     }
@@ -232,7 +237,9 @@ export default function ChatInterface({ auth, setAuth }) {
                 <div>Supports PDF, TXT, MD, JSON, CSV, XLSX, XLS</div>
               </div>
               {fileMsg && (
-                <div className="mt-2 text-xs text-green-400 flex items-center gap-1">
+                <div
+                  className={`mt-2 text-xs flex items-center gap-1 ${fileMsgType === "error" ? "text-red-400" : "text-green-400"}`}
+                >
                   <CheckCircle className="w-3 h-3" /> {fileMsg}
                 </div>
               )}
