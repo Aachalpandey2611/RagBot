@@ -97,7 +97,7 @@ async def upload_document(file: UploadFile = File(...)):
                 d.metadata["page"] = i + 1
             documents.extend(docs)
             
-        elif ext == "txt":
+        elif ext in ["txt", "md", "markdown"]:
             # Using basic file read as TextLoader has encoding issues sometimes
             with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
                 content = f.read()
