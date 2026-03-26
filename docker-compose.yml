@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: chatbot_mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - rag_network
+
+  rag_service:
+    build:
+      context: ./rag_service
+    container_name: rag_microservice
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./rag_service/.env
+    volumes:
+      - ./rag_service/data_uploads:/app/data_uploads
+      - ./rag_service/faiss_index:/app/faiss_index
+    networks:
+      - rag_network
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+    container_name: chatbot_backend
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - MONGO_URI=mongodb://mongodb:27017/chatbot_rag
+      - JWT_SECRET=supersecretproductionkey999
+      - RAG_SERVICE_URL=http://rag_service:8000
+    depends_on:
+      - mongodb
+      - rag_service
+    networks:
+      - rag_network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: chatbot_frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - rag_network
+    restart: unless-stopped
+
+networks:
+  rag_network:
+    driver: bridge
+
+volumes:
+  mongo_data:

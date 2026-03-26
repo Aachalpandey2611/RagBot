@@ -1,0 +1,28 @@
+# Node
+node_modules/
+**/node_modules/
+npm-debug.log*
+
+# Python
+.venv/
+venv/
+**/venv/
+**/__pycache__/
+*.py[cod]
+
+# Environment and secrets
+.env
+**/.env
+
+# Build outputs
+frontend/dist/
+
+# Runtime uploads/index data
+backend/uploads/
+rag_service/data_uploads/
+rag_service/faiss_index/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
